@@ -44,12 +44,20 @@ El programa hace lo siguiente:
 
 > En el archivo, el nombre y la contraseña de la red WiFi y el ID del webhook se reemplazaron por textos de ejemplo. Hay que poner los propios antes de cargar el programa.
 
-## Escenario en Make
+## Escenario en Make (blueprint)
 
-El escenario **"Leer DTH11"** tiene dos módulos y está activo en modo *Immediately as data arrives*:
+[`Codigo/Leer DTH11.blueprint.json`](Codigo/Leer%20DTH11.blueprint.json)
 
-1. **Webhooks – Custom webhook:** recibe el JSON con la temperatura que envía el Arduino.
-2. **Telegram Bot – Send a Text Message or a Reply:** envía la alerta al chat del bot "Temperatura" con el valor recibido.
+El blueprint es la exportación del escenario **"Leer DTH11"** de Make.com (⋯ → *Export Blueprint*). Se puede volver a cargar en Make con *Import Blueprint*. Contiene dos módulos:
+
+1. **Webhooks – Custom webhook** (`gateway:CustomWebHook`, módulo 1). Es el disparador del escenario. Recibe el JSON que envía el Arduino y define la estructura de datos con un solo campo, `temperatura` (número). `maxResults: 1` indica que procesa un mensaje por ejecución.
+2. **Telegram Bot – Send a Text Message or a Reply** (`telegram:SendReplyMessage`, módulo 2). Usa la conexión del bot "Temperatura" y envía al chat configurado en `chatId` el texto:
+   `⚠️ El cuarto está muy caliente ({{1.temperatura}}) Enciende el aire acondicionado.`
+   La expresión `{{1.temperatura}}` toma el valor de temperatura que llegó al módulo 1. `parseMode` vacío significa que se envía como texto plano.
+
+En la configuración general (`metadata`), `instant: true` indica que el escenario se ejecuta en cuanto llega un dato al webhook (*Immediately as data arrives*); `maxErrors: 3` desactiva el escenario después de 3 errores seguidos, y `zone: us2.make.com` es el servidor de Make de la cuenta.
+
+> En el archivo se reemplazó el ID del chat de Telegram por `TU_CHAT_ID`. Hay que poner el propio al importarlo.
 
 ![Escenario en Make](Imagenes/Escenario%20Make%20Leer%20DTH11.png)
 
@@ -65,7 +73,9 @@ El escenario **"Leer DTH11"** tiene dos módulos y está activo en modo *Immedia
 
 ## Video
 
-[`Video/Funcionamiento Sensor DHT11.mp4`](Video/Funcionamiento%20Sensor%20DHT11.mp4)
+[Ver video en YouTube](https://youtu.be/Ljq2hAXILz0)
+
+Archivo del video: [`Video/Funcionamiento Sensor DHT11.mp4`](Video/Funcionamiento%20Sensor%20DHT11.mp4)
 
 ## Resultados
 
